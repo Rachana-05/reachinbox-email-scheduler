@@ -14,7 +14,8 @@ import {
 } from "lucide-react";
 import "./App.css";
 
-const API_URL = "http://localhost:5001";
+const API_URL =
+  import.meta.env.VITE_API_URL || "http://localhost:5001";
 
 const USER_ID = "1e9f717c-a1f4-429b-99ad-99aba7a7b5e5";
 const SENDER_ID = "30f68a31-5e65-49e2-ac49-596810080275";
