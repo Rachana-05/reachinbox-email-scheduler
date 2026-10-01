@@ -6,45 +6,102 @@ A production-oriented full-stack email scheduling application built as part of t
 
 https://ravishing-stillness-production-ec11.up.railway.app
 
-## Features
+## GitHub Repository
 
-- Create and schedule email campaigns
-- CSV recipient upload
-- PostgreSQL persistence
-- BullMQ background job processing
-- Redis-backed job queue
-- Configurable email delays
-- Configurable worker concurrency
-- Hourly email rate limiting
-- Email cancellation
-- Elasticsearch-based email search
-- Nodemailer and Ethereal email delivery
-- Bull Board queue monitoring
-- Docker Compose development environment
-- Railway deployment
+https://github.com/Rachana-05/reachinbox-email-scheduler
 
-## Tech Stack
+---
 
-- React
-- TypeScript
-- Vite
-- Node.js
-- Express.js
-- PostgreSQL
-- Redis
-- BullMQ
-- Elasticsearch
-- Nodemailer
-- Docker
-- Railway
+# Features
 
-## Project Structure
+### Email Campaign Scheduling
+- Create email campaigns from the dashboard.
+- Configure email subject and body.
+- Schedule campaigns for a specified start time.
+- Configure delay between email jobs.
+- Configure hourly sending limits.
+
+### CSV Recipient Upload
+- Upload recipient lists using CSV files.
+- Parse recipient data on the frontend.
+- Schedule emails for multiple recipients.
+
+### Background Job Processing
+- BullMQ is used for reliable background email scheduling.
+- Redis acts as the persistent queue backend.
+- Delayed jobs are created based on the campaign schedule.
+- Worker concurrency can be configured through environment variables.
+
+### Email Rate Limiting
+- Supports configurable minimum delay between email sends.
+- Supports hourly sending limits.
+- Redis-based counters are used for rate-limit tracking.
+- Emails exceeding the hourly limit are rescheduled.
+
+### Email Cancellation
+- Scheduled emails can be cancelled before processing.
+- Job state and database state are updated accordingly.
+
+### Email Search
+- Email records are indexed in Elasticsearch.
+- Search functionality supports finding emails by recipient and other indexed fields.
+
+### Email Delivery
+- Nodemailer is used for email delivery.
+- Ethereal is used as the test email provider during development.
+
+### Queue Monitoring
+- Bull Board provides a dashboard for monitoring BullMQ queues and jobs.
+
+### Persistent Storage
+- PostgreSQL stores users, senders, campaigns and email records.
+
+---
+
+# Architecture
+
+The application follows a frontend/backend/worker architecture.
 
 ```text
-reachinbox-email-scheduler/
-├── backend/
-├── frontend/
-├── docker-compose.yml
-├── test-recipients.csv
-├── README.md
-└── .gitignore
+                    +----------------------+
+                    |    React Frontend    |
+                    |  TypeScript + Vite   |
+                    +----------+-----------+
+                               |
+                               | REST API
+                               v
+                    +----------------------+
+                    | Node.js / Express API|
+                    |     TypeScript       |
+                    +----+------------+----+
+                         |            |
+                         |            |
+                         v            v
+                +-------------+   +-------------+
+                | PostgreSQL  |   | Redis       |
+                | Persistence |   | BullMQ Queue|
+                +-------------+   +------+------+
+                                        |
+                                        v
+                               +----------------+
+                               | Email Worker   |
+                               | BullMQ Worker  |
+                               +-------+--------+
+                                       |
+                                       v
+                              +------------------+
+                              | Nodemailer /     |
+                              | Ethereal Email   |
+                              +------------------+
+
+                    Elasticsearch
+                         ^
+                         |
+                    Email indexing
+                         |
+                    Backend / Worker
+
+                    Bull Board
+                         |
+                         v
+                  Queue Monitoring
